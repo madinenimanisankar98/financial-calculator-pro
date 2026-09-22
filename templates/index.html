@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Calculator PRO</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- Floating mist glow orbs (background decoration) -->
+<div class="mist-orb orb-1"></div>
+<div class="mist-orb orb-2"></div>
+<div class="mist-orb orb-3"></div>
+
+<!-- ============================= HEADER ============================= -->
+<header class="app-header">
+  <div class="brand">
+    <span class="brand-icon">💹</span>
+    <span class="brand-name">Financial Calculator <span class="pro-tag">PRO</span></span>
+  </div>
+  <div class="header-actions">
+    <button id="btnBackHome" class="btn-ghost hidden">← Back to Home</button>
+    <button id="btnLearn" class="btn-ghost">📚 Learn</button>
+    <button id="btnAsk" class="btn-ghost">🤖 Ask Questions</button>
+    <div class="lang-toggle">
+      <button class="lang-btn active" data-lang="en">English</button>
+      <button class="lang-btn" data-lang="te">తెలుగు</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============================= HOME DASHBOARD ============================= -->
+  <section id="homeView" class="view active">
+    <div class="hero">
+      <h1>Financial Calculator</h1>
+      <p>Simple tools for smarter financial decisions</p>
+    </div>
+
+    <div class="card-grid">
+      <button class="calc-card" data-target="savingsView" style="--accent:#10b981">
+        <span class="card-icon">💰</span>
+        <span class="card-title">Savings Calculator</span>
+        <span class="card-desc">Plan and track your savings goals</span>
+      </button>
+
+      <button class="calc-card" data-target="emiView" style="--accent:#a855f7">
+        <span class="card-icon">💳</span>
+        <span class="card-title">EMI Calculator</span>
+        <span class="card-desc">Estimate your loan instalments</span>
+      </button>
+
+      <button class="calc-card" data-target="gstView" style="--accent:#f59e0b">
+        <span class="card-icon">🧾</span>
+        <span class="card-title">GST Calculator</span>
+        <span class="card-desc">Compute tax inclusive/exclusive</span>
+      </button>
+
+      <button class="calc-card" data-target="percentageView" style="--accent:#06b6d4">
+        <span class="card-icon">📊</span>
+        <span class="card-title">Percentage Calculator</span>
+        <span class="card-desc">Quick percentage calculations</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============================= SAVINGS CALCULATOR ============================= -->
+  <section id="savingsView" class="view calc-view" style="--accent:#10b981">
+    <h2>💰 Savings Calculator</h2>
+    <div class="calc-layout">
+      <form id="savingsForm" class="calc-form">
+        <label>Monthly Income (₹)
+          <input type="number" step="0.01" min="0" name="monthly_income" required>
+        </label>
+        <label>Monthly Expenses (₹)
+          <input type="number" step="0.01" min="0" name="monthly_expenses" required>
+        </label>
+        <label>Savings Goal Name
+          <input type="text" name="goal_name" placeholder="e.g. New Laptop" required>
+        </label>
+        <label>Goal Price (₹)
+          <input type="number" step="0.01" min="0" name="goal_price" required>
+        </label>
+        <div class="inline-fields">
+          <label>Target Period (optional)
+            <input type="number" step="1" min="0" name="target_value" placeholder="e.g. 6">
+          </label>
+          <label>Unit
+            <select name="target_unit">
+              <option value="months">Months</option>
+              <option value="years">Years</option>
+            </select>
+          </label>
+        </div>
+        <button type="submit" class="btn-primary">Calculate</button>
+      </form>
+
+      <div class="calc-results" id="savingsResults">
+        <p class="placeholder-text">Fill the form to see your savings plan.</p>
+      </div>
+    </div>
+
+    <div class="chart-grid" id="savingsCharts" style="display:none">
+      <div class="chart-card">
+        <h3>Expenses vs Savings</h3>
+        <canvas id="savingsPieChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Savings Accumulation Timeline</h3>
+        <canvas id="savingsLineChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Goal Progress</h3>
+        <div class="progress-fill-wrap">
+          <div class="progress-fill-bar" id="savingsProgressBar"></div>
+        </div>
+        <p id="savingsProgressLabel">0%</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= EMI CALCULATOR ============================= -->
+  <section id="emiView" class="view calc-view" style="--accent:#a855f7">
+    <h2>💳 EMI Calculator</h2>
+    <div class="calc-layout">
+      <form id="emiForm" class="calc-form">
+        <label>Loan Principal Amount (₹)
+          <input type="number" step="0.01" min="0" name="principal" required>
+        </label>
+        <label>Annual Interest Rate (%)
+          <input type="number" step="0.01" min="0" name="annual_rate" required>
+        </label>
+        <div class="inline-fields">
+          <label>Loan Tenure
+            <input type="number" step="1" min="1" name="tenure_value" required>
+          </label>
+          <label>Unit
+            <select name="tenure_unit">
+              <option value="years">Years</option>
+              <option value="months">Months</option>
+            </select>
+          </label>
+        </div>
+        <label>EMIs Already Paid (months, optional)
+          <input type="number" step="1" min="0" name="emis_paid" value="0">
+        </label>
+        <button type="submit" class="btn-primary">Calculate</button>
+      </form>
+
+      <div class="calc-results" id="emiResults">
+        <p class="placeholder-text">Fill the form to see your EMI breakdown.</p>
+      </div>
+    </div>
+
+    <div class="chart-grid" id="emiCharts" style="display:none">
+      <div class="chart-card">
+        <h3>Principal vs Interest</h3>
+        <canvas id="emiPieChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Remaining Principal Over Time</h3>
+        <canvas id="emiLineChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= GST CALCULATOR ============================= -->
+  <section id="gstView" class="view calc-view" style="--accent:#f59e0b">
+    <h2>🧾 GST Calculator</h2>
+    <div class="calc-layout">
+      <form id="gstForm" class="calc-form">
+        <label>Product Name (optional)
+          <input type="text" name="product_name" placeholder="e.g. Headphones">
+        </label>
+        <label>Product Price (₹)
+          <input type="number" step="0.01" min="0" name="price" required>
+        </label>
+        <label>Tax Mode
+          <select name="mode">
+            <option value="exclusive">Exclusive (add GST)</option>
+            <option value="inclusive">Inclusive (extract GST)</option>
+          </select>
+        </label>
+        <label>GST Percentage</label>
+        <div class="chip-group" id="gstChips">
+          <button type="button" class="chip" data-value="5">5%</button>
+          <button type="button" class="chip active" data-value="12">12%</button>
+          <button type="button" class="chip" data-value="18">18%</button>
+          <button type="button" class="chip" data-value="28">28%</button>
+        </div>
+        <input type="number" step="0.01" min="0" name="gst_percent" id="gstCustomInput" placeholder="Custom %" value="12">
+        <button type="submit" class="btn-primary">Calculate</button>
+      </form>
+
+      <div class="calc-results" id="gstResults">
+        <p class="placeholder-text">Fill the form to see the GST breakdown.</p>
+      </div>
+    </div>
+
+    <div class="chart-grid" id="gstCharts" style="display:none">
+      <div class="chart-card">
+        <h3>Base Price vs GST</h3>
+        <canvas id="gstBarChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================= PERCENTAGE CALCULATOR ============================= -->
+  <section id="percentageView" class="view calc-view" style="--accent:#06b6d4">
+    <h2>📊 Percentage Calculator</h2>
+    <div class="calc-layout">
+      <form id="percentageForm" class="calc-form">
+        <label>Total Base Amount
+          <input type="number" step="0.01" min="0" name="total_amount" required>
+        </label>
+        <label>Target Percentage (%)
+          <input type="number" step="0.01" min="0" name="percentage" required>
+        </label>
+        <button type="submit" class="btn-primary">Calculate</button>
+      </form>
+
+      <div class="calc-results" id="percentageResults">
+        <p class="placeholder-text">Fill the form to see the result.</p>
+      </div>
+    </div>
+
+    <div class="chart-grid" id="percentageCharts" style="display:none">
+      <div class="chart-card">
+        <h3>Percentage Share</h3>
+        <canvas id="percentageGaugeChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================= LEARN MODAL ============================= -->
+<div id="learnModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2>📚 Learn</h2>
+      <button class="modal-close" data-close="learnModal">✕</button>
+    </div>
+    <div class="modal-body" id="learnBody">
+      <p class="placeholder-text">Loading...</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= ASK AI MODAL ============================= -->
+<div id="askModal" class="modal-overlay hidden">
+  <div class="modal glass">
+    <div class="modal-header">
+      <h2>🤖 Ask Questions</h2>
+      <button class="modal-close" data-close="askModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="chatWindow" class="chat-window">
+        <div class="chat-msg bot">Hi! Ask me anything about savings, EMI, GST, or percentages.</div>
+      </div>
+      <form id="chatForm" class="chat-form">
+        <input type="text" id="chatInput" placeholder="Type your question..." autocomplete="off" required>
+        <button type="submit" class="btn-primary">Send</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/learn.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
