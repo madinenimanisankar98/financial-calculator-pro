@@ -99,8 +99,7 @@ def calculate_emi(principal, annual_rate, tenure_value, tenure_unit="years",
     Standard reducing-balance EMI calculation.
     tenure_unit: "years" or "months"
     """
-
-     principal = float(principal)
+    principal = float(principal)
     annual_rate = float(annual_rate)
     tenure_value = float(tenure_value)
     emis_paid = int(emis_paid or 0)
