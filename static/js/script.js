@@ -215,6 +215,23 @@ function buildTimelineSummary(data) {
 /* ---------------------------------------------------------------
    EMI Calculator
    --------------------------------------------------------------- */
+const EMI_QUOTES = [
+  "A loan repaid on time is a promise kept to your future self.",
+  "Every EMI paid is one step closer to owning it outright.",
+  "Discipline in repayment today buys you freedom from debt tomorrow.",
+  "The smaller the tenure, the smaller the price of borrowing.",
+  "Debt is a tool — used wisely, it builds; used carelessly, it burdens.",
+  "Track it, plan it, pay it off — that's how loans get conquered.",
+  "Your EMI is a habit. Build it well and it builds your credit.",
+  "Patience and consistency turn a loan into a paid-off asset.",
+];
+
+function monthsToYM(totalMonths) {
+  const years = Math.floor(totalMonths / 12);
+  const months = totalMonths % 12;
+  return { years, months };
+}
+
 function initEmiForm() {
   const form = document.getElementById('emiForm');
   form.addEventListener('submit', async (e) => {
@@ -237,17 +254,74 @@ function initEmiForm() {
       return;
     }
 
-    let html = '';
-    html += resultRow('Monthly EMI', formatCurrency(data.emi), { highlight: true });
-    html += resultRow('Total Payable', formatCurrency(data.total_payable));
-    html += resultRow('Total Interest', formatCurrency(data.total_interest));
-    if (data.remaining_balance !== undefined) {
-      html += resultRow(`Remaining Balance (after ${data.emis_paid} EMIs)`, formatCurrency(data.remaining_balance));
-    }
-
-    resultsEl.innerHTML = html;
+    resultsEl.innerHTML = buildEmiResultHtml(data);
     renderEmiCharts(data);
   });
+}
+
+function buildEmiResultHtml(data) {
+  const quote = EMI_QUOTES[Math.floor(Math.random() * EMI_QUOTES.length)];
+  const duration = monthsToYM(data.total_months);
+
+  let html = '';
+
+  // ---- Hero: Loan amount, big and bold ----
+  html += `
+    <div class="savings-hero emi-hero">
+      <span class="savings-hero-label">Loan Amount</span>
+      <div class="savings-hero-price emi-price">${formatCurrency(data.principal)}</div>
+    </div>
+  `;
+
+  // ---- Stat cards: EMI, duration, interest, total payable ----
+  html += `
+    <div class="stat-grid">
+      <div class="stat-card highlight emi-highlight">
+        <span class="stat-icon">💳</span>
+        <span class="stat-label">Monthly EMI</span>
+        <span class="stat-value">${formatCurrency(data.emi)}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">⏳</span>
+        <span class="stat-label">Duration to Pay</span>
+        <span class="stat-value">${duration.years}y ${duration.months}m</span>
+        <span class="stat-subvalue">${data.total_months} months total</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">📈</span>
+        <span class="stat-label">Total Interest</span>
+        <span class="stat-value">${formatCurrency(data.total_interest)}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">🧮</span>
+        <span class="stat-label">Total Payable</span>
+        <span class="stat-value">${formatCurrency(data.total_payable)}</span>
+      </div>
+    </div>
+  `;
+
+  // ---- Remaining balance (only shown if EMIs already paid was entered) ----
+  if (data.remaining_balance !== undefined) {
+    const remainingMonths = Math.max(data.total_months - data.emis_paid, 0);
+    const remDuration = monthsToYM(remainingMonths);
+    html += `
+      <div class="target-card emi-remaining">
+        <h4>📉 Remaining After ${data.emis_paid} EMIs Paid</h4>
+        <div class="result-row"><span class="result-label">Remaining Balance</span><span class="result-value highlight">${formatCurrency(data.remaining_balance)}</span></div>
+        <div class="result-row"><span class="result-label">Remaining Duration</span><span class="result-value">${remDuration.years}y ${remDuration.months}m (${remainingMonths} months)</span></div>
+      </div>
+    `;
+  }
+
+  // ---- Animated motivational quote ----
+  html += `
+    <div class="quote-box emi-quote-box">
+      <span class="quote-mark">“</span>
+      <p class="quote-text">${escapeHtmlLocal(quote)}</p>
+    </div>
+  `;
+
+  return html;
 }
 
 /* ---------------------------------------------------------------
