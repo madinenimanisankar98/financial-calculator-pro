@@ -377,6 +377,14 @@ function initGstForm() {
 /* ---------------------------------------------------------------
    Percentage Calculator
    --------------------------------------------------------------- */
+const PERCENTAGE_QUOTES = [
+  "Percentages turn confusing numbers into clear decisions.",
+  "A clear calculation today saves a costly mistake tomorrow.",
+  "Numbers don't lie — understanding them puts you in control.",
+  "Small percentages, calculated right, lead to big financial clarity.",
+  "Know your numbers, and your money will follow your plan.",
+];
+
 function initPercentageForm() {
   const form = document.getElementById('percentageForm');
   form.addEventListener('submit', async (e) => {
@@ -396,13 +404,54 @@ function initPercentageForm() {
       return;
     }
 
-    let html = '';
-    html += resultRow(`${data.percentage}% of Total`, formatCurrency(data.value), { highlight: true });
-    html += resultRow('Remainder', formatCurrency(data.remainder));
-
-    resultsEl.innerHTML = html;
+    resultsEl.innerHTML = buildPercentageResultHtml(data);
     renderPercentageChart(data);
   });
+}
+
+function buildPercentageResultHtml(data) {
+  const quote = PERCENTAGE_QUOTES[Math.floor(Math.random() * PERCENTAGE_QUOTES.length)];
+
+  let html = '';
+
+  // ---- Hero: Total Amount, big and bold ----
+  html += `
+    <div class="savings-hero pct-hero">
+      <span class="savings-hero-label">Total Amount</span>
+      <div class="savings-hero-price pct-price">${formatCurrency(data.total_amount)}</div>
+    </div>
+  `;
+
+  // ---- Stat cards: percentage applied, calculated result, balance amount ----
+  html += `
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-icon">📐</span>
+        <span class="stat-label">Percentage Applied</span>
+        <span class="stat-value">${data.percentage}%</span>
+      </div>
+      <div class="stat-card highlight pct-highlight">
+        <span class="stat-icon">✅</span>
+        <span class="stat-label">Calculated Result</span>
+        <span class="stat-value">${formatCurrency(data.value)}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">💼</span>
+        <span class="stat-label">Balance Amount</span>
+        <span class="stat-value">${formatCurrency(data.remainder)}</span>
+      </div>
+    </div>
+  `;
+
+  // ---- Animated motivational quote ----
+  html += `
+    <div class="quote-box pct-quote-box">
+      <span class="quote-mark">“</span>
+      <p class="quote-text">${escapeHtmlLocal(quote)}</p>
+    </div>
+  `;
+
+  return html;
 }
 
 /* ---------------------------------------------------------------
